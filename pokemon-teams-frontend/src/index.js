@@ -66,7 +66,7 @@ function setUpAllTrainersForRetrieval() {
 // ADD A POKEMON
 function setUpPokemonForCreation() {
      main.addEventListener('click', e => {
-          let addButtons = document.querySelectorAll('.add-pokemon-btn') // all add pokemon buttons
+          let addButtons = document.querySelectorAll('.add-pokemon-btn')
           let pokemonHolder = e.target.nextElementSibling
           addButtons.forEach(btn => {
                if (e.target === btn) {
@@ -100,10 +100,7 @@ function setUpPokemonForCreation() {
 
                fetch(POKEMONS_URL, options)
                     .then(res => res.json())
-                    .then(pokemon => {
-                         createPokemonItem(pokemon)
-                         console.log(data)
-                    })
+                    .then(pokemon => createPokemonItem(pokemon))
                     .catch(err => console.log(err.message))
 
                // ==============================================
