@@ -80,7 +80,6 @@ function setUpPokemonForCreation() {
                     }
                }
           })
-
           // =====================================================
 
           // ABSTRACTING AWAY POST FETCH CODE
@@ -126,15 +125,23 @@ function setUpPokemonForDeletion() {
           releaseButtons.forEach(btn => {
                if (e.target === btn) {
                     let pokemonId = btn.dataset.pokemonId;
-                    createFetchDelete(pokemonId)
-                    btn.parentElement.remove()
+                    let pokemonHolder = btn.parentElement.parentElement
+                    let pokemonList = btn.parentElement.parentElement.querySelectorAll('li')
+                    if (pokemonList.length <= 1) {
+                         alert("To be a trainer you need at least one pokemon")
+                    } else {
+                         // alert(btn.parentElement)
+                         btn.parentElement.remove()
+                         createFetchDeleteBy(pokemonId)
+                         // debugger;
+                    }
                }
           })
 
           // ====================================================
 
           // ABSTRACTING AWAY DELETE FETCH CODE
-          function createFetchDelete(id) {
+          function createFetchDeleteBy(id) {
                fetch(`${POKEMONS_URL}/${id}`, {
                          "method": "DELETE"
                     })
