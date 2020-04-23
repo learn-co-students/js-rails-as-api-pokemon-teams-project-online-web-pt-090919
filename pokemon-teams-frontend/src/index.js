@@ -82,7 +82,7 @@ const deletePokemon = (event) => {
             "Accept": "application/json"
         }
     }
-    fetch(`${POKEMONS_URL}`/`${event.target.dataset.pokemonId}`, configObj)
+    fetch(`${POKEMONS_URL}/${event.target.dataset.pokemonId}`, configObj)
     event.target.parentElement.remove()
 
 }
