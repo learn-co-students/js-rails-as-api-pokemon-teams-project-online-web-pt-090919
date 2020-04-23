@@ -1,14 +1,17 @@
 const BASE_URL = "http://localhost:3000"
 const TRAINERS_URL = `${BASE_URL}/trainers`
 const POKEMONS_URL = `${BASE_URL}/pokemons`
+// added main to append to.
 const main = document.querySelector('main')
 
 document.addEventListener('DOMContentLoaded', () => loadTrainers())
-
+// the DOMContentloaded takes a function pointed to a function called Load trainers
 const loadTrainers = () => {
+    // This function is stored in a variable then fetched
     fetch(TRAINERS_URL)
     .then(resp => resp.json())
     .then(data => {
+        // forEach to another function that is reciving an argument (trainer) for the input of data =>
             data.forEach(trainer => renderTrainer(trainer))
           })
 }
