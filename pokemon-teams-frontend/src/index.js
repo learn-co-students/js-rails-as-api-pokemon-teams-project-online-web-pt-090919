@@ -6,65 +6,25 @@ const main = document.querySelector("main");
 document.addEventListener("DOMContentLoaded", e => {
      getTrainers();
      postPokemon();
-     removePokemon()
+     removePokemon();
 });
 
 
 // GET TRAINERS 
 function getTrainers() {
-     setUpAllTrainersForRetrieval();
-}
-
-// POST A POKEMON
-function postPokemon() {
-     setUpPokemonForCreation();
-}
-
-// REMOVE A POKEMON
-function removePokemon() {
-     setUpPokemonForDeletion();
-}
-
-// ============================================================
-
-// CREATE TRAINERS
-function createTrainerCards(trainerData) {
-     trainerData.forEach(trainer => {
-          let trainerCard = document.createElement("div");
-          trainerCard.classList.add("card");
-          trainerCard.setAttribute("data-id", `${trainer.id}`);
-          trainerCard.innerHTML += `
-          <p>${trainer.name}</p>
-          <button data-trainer-id="${trainer.id}" class="add-pokemon-btn">Add Pokemon</button>
-       `;
-
-          let pokemonHolder = document.createElement("ul");
-
-          trainer.pokemons.forEach(pokemon => {
-               pokemonHolder.innerHTML += `
-          <li>${pokemon.nickname} (${pokemon.species}) <button class="release" data-pokemon-id="${pokemon.id}">Release</button></li>
-          `;
-               trainerCard.append(pokemonHolder);
-               main.appendChild(trainerCard);
-          });
-     });
-};
-// ============================================================
-
-// GET ALL POKEMON 
-function setUpAllTrainersForRetrieval() {
      fetch(TRAINERS_URL)
-          .then(res => res.json())
-          .then(trainerData => {
-               createTrainerCards(trainerData);
-               console.log("SUCCESS");
+          .then(res => {
+               return res.json()
+          })
+          .then(pokemon => {
+               createTrainerCards(pokemon)
+               console.log("SUCCESS")
           })
           .catch(err => console.log(err.message));
 }
-// ============================================================
 
 // ADD A POKEMON
-function setUpPokemonForCreation() {
+function postPokemon() {
      main.addEventListener('click', e => {
           let addButtons = document.querySelectorAll('.add-pokemon-btn')
           let pokemonHolder = e.target.nextElementSibling
@@ -79,16 +39,16 @@ function setUpPokemonForCreation() {
                          createFetchPost(trainerId)
                     }
                }
-          })
-          // =====================================================
+          });
 
-          // ABSTRACTING AWAY POST FETCH CODE
+          // CLOSURE
           function createFetchPost(id) {
-               data = {
+
+               let data = {
                     "trainer_id": id
                }
 
-               options = {
+               let options = {
                     "method": "POST",
                     "headers": {
                          'Content-Type': "application/json",
@@ -99,48 +59,38 @@ function setUpPokemonForCreation() {
 
                fetch(POKEMONS_URL, options)
                     .then(res => res.json())
-                    .then(pokemon => createPokemonItem(pokemon))
+                    .then(pokemon => {
+                         // debugger
+                         createPokemonItem(pokemon)
+                    })
                     .catch(err => console.log(err.message))
 
-               // ==============================================
-
+               // CLOSURE
                function createPokemonItem(pokemon) {
                     pokemonItem = document.createElement('li')
-                    pokemonItem.innerHTML += `${pokemon.data.nickname} (${pokemon.data.species})
-                    <button class="release" data-pokemon-id="${pokemon.data.id}"> Release</button>`
+                    pokemonItem.innerHTML += `${pokemon.data.attributes.nickname} (${pokemon.data.attributes.species})
+                    <button class="release" data-pokemon-id="${pokemon.id}"> Release</button>`
+                    debugger
                     pokemonHolder.appendChild(pokemonItem)
                }
-               // ===============================================
           }
-          // =====================================================
      })
 }
 
-// ============================================================
-
 // DELETE A POKEMON 
-function setUpPokemonForDeletion() {
+function removePokemon() {
      main.addEventListener('click', e => {
-          let releaseButtons = document.querySelectorAll('.release') // all release pokemon buttons
-          releaseButtons.forEach(btn => {
-               if (e.target === btn) {
-                    let pokemonId = btn.dataset.pokemonId;
-                    let pokemonHolder = btn.parentElement.parentElement
-                    let pokemonList = btn.parentElement.parentElement.querySelectorAll('li')
-                    if (pokemonList.length <= 1) {
-                         alert("To be a trainer you need at least one pokemon")
-                    } else {
-                         // alert(btn.parentElement)
-                         btn.parentElement.remove()
-                         createFetchDeleteBy(pokemonId)
-                         // debugger;
-                    }
+
+          let releaseButtons = document.querySelectorAll('.release')
+          releaseButtons.forEach(delPoke => {
+               if (e.target === delPoke) {
+                    let pokemonId = delPoke.dataset.pokemonId;
+                    delPoke.parentElement.remove()
+                    createFetchDeleteBy(pokemonId)
                }
-          })
+          });
 
-          // ====================================================
-
-          // ABSTRACTING AWAY DELETE FETCH CODE
+          // CLOSURE
           function createFetchDeleteBy(id) {
                fetch(`${POKEMONS_URL}/${id}`, {
                          "method": "DELETE"
@@ -148,8 +98,30 @@ function setUpPokemonForDeletion() {
                     .then(console.log("Deleted Successfully"))
                     .catch(err => console.log(err.message))
           }
-          // =====================================================
      })
 }
 
-// ============================================================
+// CREATE TRAINERS
+function createTrainerCards(trainerData) {
+     trainerData.data.forEach(trainer => {
+          // debugger
+          let trainerCard = document.createElement("div");
+          trainerCard.classList.add("card");
+          trainerCard.setAttribute("data-id", `${trainer.id}`);
+          trainerCard.innerHTML += `
+          <p>${trainer.attributes.name}</p>
+          <button data-trainer-id="${trainer.attributes.id}"
+          class="add-pokemon-btn">Add Pokemon</button>
+          `;
+          // debugger
+          let pokemonHolder = document.createElement("ul");
+
+          trainer.attributes.pokemons.forEach(pokemon => {
+               pokemonHolder.innerHTML += `
+          <li>${pokemon.nickname} (${pokemon.species}) <button class="release" data-pokemon-id="${pokemon.id}">Release</button></li>
+          `;
+               trainerCard.append(pokemonHolder);
+               main.appendChild(trainerCard);
+          })
+     });
+};
